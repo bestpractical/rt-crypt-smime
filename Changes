@@ -1,0 +1,37 @@
+Revision history for RT-Crypt-SMIME
+
+0.22
+    Use email address from the config if queue has no addresses defined.
+    Use NO_ENCRYPTION flag when sending errors.
+
+0.21
+    Add support for a key per email address.
+
+0.20
+    Fix expiration of a user's attribute we use to cache expiration
+    date of her cert. Now in all cases, even when a key's been updated
+    using API.
+
+0.19
+    Delete user's attribute with expiration date of her key when we
+    update the key.
+
+0.18
+    Use a more generic regexp for detecting smime encrypted messages.
+    Add several new messages for debugging.
+
+0.17
+    We sent messages encrypted without all recipients' keys when there
+    were problems with recipients' keys. So people who have valid keys
+    got messages they can not decrypt. Fix it
+
+0.16
+    Add $NO_ENCRYPTION
+    Use $NO_ENCRYPTION to avoid recursion during errors reporting
+
+0.15
+    Store not encrypted messages in outgoing email records
+
+0.01 - 0.14
+    Initial releases
+

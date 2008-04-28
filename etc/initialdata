@@ -1,0 +1,27 @@
+@CustomFields = (
+    {
+        Name        => 'PublicKey',
+        Type        => 'Text',
+        LookupType  => 'RT::User',
+        MaxValues => 1,
+        Disabled    => 0,
+        Description => 'Public Key',
+    },
+);
+
+@Templates = ( 
+
+    {   Queue       => '0',
+        Name        => 'NoPublicKey',    # loc
+        Description =>
+            'What RT should send when the user has no defined public key'
+        ,                                # loc
+        Content => q{
+You haven't defined a S/MIME public key in your RT profile yet. Until you do that,
+you will only get mail containing the subject and URL of an RT ticket.
+
+<URL: {$RT::WebURL}Ticket/Display.html?id={$Ticket->id} >
+}
+    },
+
+);
