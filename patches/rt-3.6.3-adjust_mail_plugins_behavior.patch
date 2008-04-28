@@ -1,0 +1,51 @@
+----------------------------------------------------------------------
+r4425 (orig r6789):  ruz | 2007-01-21 07:50:29 +0300
+
+* that was wrong idea to run next mail plugins for some action
+  if the current plugin said that everything was done (returned
+  status -2).
+----------------------------------------------------------------------
+=== lib/RT/Interface/Email.pm
+==================================================================
+--- lib/RT/Interface/Email.pm	(revision 4424)
++++ lib/RT/Interface/Email.pm	(revision 4425)
+@@ -645,6 +645,10 @@
+             $skip_action{$action}++ if $AuthStat == -2;
+         }
+ 
++        # strip actions we should skip
++        @actions = grep !$skip_action{$_}, @actions if $AuthStat == -2;
++        last unless @actions;
++
+         last if $AuthStat == -1;
+     }
+     # {{{ If authentication fails and no new user was created, get out.
+@@ -694,9 +698,6 @@
+         return ( 0, $result, undef );
+     }
+     
+-    # strip actions we should skip
+-    @actions = grep !$skip_action{$_}, @actions;
+-
+     # if plugin's updated SystemTicket then update arguments
+     $args{'ticket'} = $SystemTicket->Id if $SystemTicket && $SystemTicket->Id;
+ 
+@@ -738,7 +739,7 @@
+         @actions = grep !/^(comment|correspond)$/, @actions;
+         $args{'ticket'} = $id;
+ 
+-    } else {
++    } elsif ( $args{'ticket'} ) {
+ 
+         $Ticket->Load( $args{'ticket'} );
+         unless ( $Ticket->Id ) {
+@@ -752,6 +753,9 @@
+ 
+             return ( 0, $error );
+         }
++        $args{'ticket'} = $Ticket->id;
++    } else {
++        return ( 1, "Success", $Ticket );
+     }
+ 
+     # }}}

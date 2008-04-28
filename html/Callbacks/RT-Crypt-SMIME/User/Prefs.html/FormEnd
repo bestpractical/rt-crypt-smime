@@ -1,0 +1,33 @@
+<%args>
+$UserObj => undef
+</%args>
+<%init>
+my $cfs = $UserObj->CustomFields();
+$cfs->Limit(FIELD => 'Name', VALUE => 'PublicKey');
+my $cf = $cfs->First;
+unless ( $cf && $cf->id ) {
+    $RT::Logger->error("Couldn't load 'PublicKey' user's CF");
+    return;
+}
+
+my %request = $m->request_args();
+if (my $content = $request{'SMIME-'.$cf->id. '-Values'}) {
+    $UserObj->DeleteAttribute('SMIMEKeyNotAfter');
+
+    if ($session{'CurrentUser'}->HasRight( Right => 'ModifySelf', Object => $RT::System )
+        and  ($content ne $UserObj->FirstCustomFieldValue($cf->id))
+    ) {
+    
+        my $u = RT::User->new($RT::SystemUser);
+        $u->Load($session{'CurrentUser'}->id);
+        $u->AddCustomFieldValue(Field => $cf->id, Value => $content);
+
+    }
+}
+
+
+</%init>
+<&|/Widgets/TitleBox, title => 'S/MIME Public Key'&>
+<&/Elements/EditCustomField, Object=> $UserObj, CustomField => $cf, Cols => 80, NamePrefix=> 'SMIME-' &>
+</&>
+
