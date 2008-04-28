@@ -1,8 +1,9 @@
 --- 
 abstract: An RT extension to perform S/MIME encryption and decryption for mail RT sends
-author: Jesse Vincent <jesse@bestpractical.com>
+author: 
+  - Jesse Vincent <jesse@bestpractical.com>
 distribution_type: module
-generated_by: Module::Install version 0.67
+generated_by: Module::Install version 0.68
 license: perl
 meta-spec: 
   url: http://module-build.sourceforge.net/META-spec-v1.3.html

@@ -1,0 +1,66 @@
+This file contains message digests of all files listed in MANIFEST,
+signed via the Module::Signature module, version 0.55.
+
+To verify the content in this distribution, first make sure you have
+Module::Signature installed, then type:
+
+    % cpansign -v
+
+It will check each file's integrity, as well as the signature's
+validity.  If "==> Signature verified OK! <==" is not displayed,
+the distribution may already have been compromised, and you should
+not run its Makefile.PL or Build.PL.
+
+-----BEGIN PGP SIGNED MESSAGE-----
+Hash: SHA1
+
+SHA1 075dd9b3cb39e243de74f9c97208ae2c0be7d087 Changes
+SHA1 fb5938216b0a3ec089b9aed563c2169c6dc5af7a MANIFEST
+SHA1 58cac8bb546e5fe8a403bdc86e5a1475c2da0a4b META.yml
+SHA1 8dfbbdfd151e5afa80857d69e82ae1c04b35e0f5 Makefile.PL
+SHA1 5880bdd68476947e539f9849ddacf392234a2d34 README
+SHA1 efcd28cd690193952d4a7040c2b16575f4cd399a etc/initialdata
+SHA1 a5167dd1cf25d21a4b37888b557559607304793d html/Callbacks/RT-Crypt-SMIME/User/Prefs.html/FormEnd
+SHA1 7e2cfa1b9efe0d502ee57717649c90ba4bd28ba9 inc/Module/Install.pm
+SHA1 6e1392d80a0f239eecd5664f7f21f922cedb9329 inc/Module/Install/Base.pm
+SHA1 f69417fe831d9cc22a78f00a617afadceade4d81 inc/Module/Install/Can.pm
+SHA1 c61d02895330310048bf388881b5e2e064031561 inc/Module/Install/Fetch.pm
+SHA1 54fcbed19232ec959bb17cfb4410599afc7f0779 inc/Module/Install/Makefile.pm
+SHA1 7d3be9b158e37b2b2c22084740099955623b1d56 inc/Module/Install/Metadata.pm
+SHA1 5aca3739fa3d733debd3c901b7e4c4e455ac8f64 inc/Module/Install/RTx.pm
+SHA1 82eb46aa8316831c2d067d0e2eeb0f2318fd1415 inc/Module/Install/RTx/Factory.pm
+SHA1 0a8b66180229ba2f9deaea1fedd0aacf7a7ace6b inc/Module/Install/Win32.pm
+SHA1 d3352eb33fe43a5f3ead513f645224fe34d73bc9 inc/Module/Install/WriteAll.pm
+SHA1 9d2a85e67195f938bc8c940bb673f8b5a98967aa lib/RT/Crypt/SMIME.pm
+SHA1 bacd3af2d19c6bc4a96e2da0c4fe61b6f39816a1 lib/RT/Interface/Email/Auth/SMIME.pm
+SHA1 904a548fb5f34de231e367d1e398682e4820bfd9 lib/RT/Interface/Email/Auth/StrictSMIME.pm
+SHA1 e3fdb81c7ec898e468f6f4420bc7b850624ce402 patches/rt-3.6.3-adjust_mail_plugins_behavior.patch
+SHA1 3b0dd05a4189ee01cd01a05344ead8182a82fae5 sign_and_encrypt.pl
+SHA1 b258045a12121b12401380c2a80a5228ecf0cb37 t/00.load.t
+SHA1 8bb8a996f517e5e75a423b7439f0198b457f6761 t/data/README
+SHA1 e830cab2523141182dcf4437095e188a2bf2cd54 t/data/simple-txt-enc.eml
+SHA1 547d2f0fa94e8e0b89aaff0e02377ce32dfda3e1 t/data/with-bin-attachment.eml
+SHA1 989f661a4c0a5338d3f98e34da18275c2c9c573f t/data/with-text-attachment.eml
+SHA1 6da39b48ce64b584e4c3274bff96fc76ff484820 t/pod-coverage.t
+SHA1 0190346d7072d458c8a10a45c19f86db641dcc48 t/pod.t
+SHA1 33b7b79411ed5729b0561de366daa8ec0471af50 t/smime-incoming.t
+SHA1 91495c32f528f18cfcb337bd6ab9832ba84b49fc t/smime-outgoing.t
+SHA1 8d8c74bb95fe6cc1c5479c3115405b7493ce319f testkeys/MailEncrypted.txt
+SHA1 38ef4d944a7ced5a3d6b2a954472d11cc7729aee testkeys/MailForSend.txt
+SHA1 cd41fe8c8485ae11b105fdbbb8ac9ea57991cb50 testkeys/README
+SHA1 fc78eac0d66a4383557c33997e7be5cfb192afb4 testkeys/ca.crt
+SHA1 907180f124d2ca6b94b01ac076e9772339b3ba20 testkeys/ca.key
+SHA1 43a996ba6483ec1f8bb8c482191088e11c8dd701 testkeys/recipient.crt
+SHA1 70426c248d0e9295ee515c0659e03f1f73836ce5 testkeys/recipient.csr
+SHA1 4dc99c3024e0f424dfebeb0e563c03024bd716af testkeys/recipient.key
+SHA1 768ef3ee0c87ffeef4754c1dccbfb05ab1168e01 testkeys/sender.csr
+SHA1 53d782940d09408afd4cea6a37190636e3a72754 testkeys/sender@example.com.crt
+SHA1 d0977c66a3695511d27b7d3caac05ae29f7a6557 testkeys/sender@example.com.key
+SHA1 e2c4669c280ec6c5b6800084696e15ec3734d5d4 testkeys/sender@example.com.pem
+-----BEGIN PGP SIGNATURE-----
+Version: GnuPG v1.4.8 (Darwin)
+
+iD8DBQFIFgCYEi9d9xCOQEYRApx5AKCKwFFigkBolmA2EZ/Bm9c5E5U21wCfYBxv
+UpAvABQn5lgzzKnB6w2HfrU=
+=LOCh
+-----END PGP SIGNATURE-----
