@@ -8,11 +8,14 @@ no warnings 'once';
 
 use Module::Install::Base;
 use base 'Module::Install::Base';
-our $VERSION = '0.21';
+our $VERSION = '0.29_02';
 
 use FindBin;
 use File::Glob     ();
 use File::Basename ();
+
+my @DIRS = qw(etc lib html bin sbin po var);
+my @INDEX_DIRS = qw(lib bin sbin);
 
 sub RTx {
     my ( $self, $name ) = @_;
@@ -39,27 +42,31 @@ sub RTx {
         $INC{'RT.pm'} = "$RT::LocalPath/lib/RT.pm";
     } else {
         local @INC = (
-            @INC,
             $ENV{RTHOME} ? ( $ENV{RTHOME}, "$ENV{RTHOME}/lib" ) : (),
-            map { ( "$_/rt3/lib", "$_/lib/rt3", "$_/lib" ) } grep $_,
-            @prefixes
+            @INC,
+            map { ( "$_/rt4/lib", "$_/lib/rt4", "$_/rt3/lib", "$_/lib/rt3", "$_/lib" )
+                } grep $_, @prefixes
         );
         until ( eval { require RT; $RT::LocalPath } ) {
             warn
                 "Cannot find the location of RT.pm that defines \$RT::LocalPath in: @INC\n";
-            $_ = $self->prompt("Path to your RT.pm:") or exit;
+            $_ = $self->prompt("Path to directory containing your RT.pm:") or exit;
+            $_ =~ s/\/RT\.pm$//;
             push @INC, $_, "$_/rt3/lib", "$_/lib/rt3", "$_/lib";
         }
     }
 
     my $lib_path = File::Basename::dirname( $INC{'RT.pm'} );
+    my $local_lib_path = "$RT::LocalPath/lib";
     print "Using RT configuration from $INC{'RT.pm'}:\n";
+    unshift @INC, "$RT::LocalPath/lib" if $RT::LocalPath;
+    unshift @INC, $lib_path;
 
     $RT::LocalVarPath  ||= $RT::VarPath;
     $RT::LocalPoPath   ||= $RT::LocalLexiconPath;
     $RT::LocalHtmlPath ||= $RT::MasonComponentRoot;
+    $RT::LocalLibPath  ||= "$RT::LocalPath/lib";
 
-    my %path;
     my $with_subdirs = $ENV{WITH_SUBDIRS};
     @ARGV = grep { /WITH_SUBDIRS=(.*)/ ? ( ( $with_subdirs = $1 ), 0 ) : 1 }
         @ARGV;
@@ -67,36 +74,40 @@ sub RTx {
     my %subdirs;
     %subdirs = map { $_ => 1 } split( /\s*,\s*/, $with_subdirs )
         if defined $with_subdirs;
-
-    foreach (qw(bin etc html po sbin var)) {
-        next unless -d "$FindBin::Bin/$_";
-        next if %subdirs and !$subdirs{$_};
-        $self->no_index( directory => $_ );
-
-        no strict 'refs';
-        my $varname = "RT::Local" . ucfirst($_) . "Path";
-        $path{$_} = ${$varname} || "$RT::LocalPath/$_";
+    unless ( keys %subdirs ) {
+        $subdirs{$_} = 1 foreach grep -d "$FindBin::Bin/$_", @DIRS;
     }
-
-    $path{$_} .= "/$name" for grep $path{$_}, qw(etc po var);
-    $path{lib} = "$RT::LocalPath/lib" unless %subdirs and !$subdirs{'lib'};
 
     # If we're running on RT 3.8 with plugin support, we really wany
     # to install libs, mason templates and po files into plugin specific
     # directories
-    if ($RT::LocalPluginPath) {
-        foreach my $path (qw(lib po html etc bin sbin)) {
-            next unless -d "$FindBin::Bin/$path";
-            next if %subdirs and !$subdirs{$path};
-            $path{$path} = $RT::LocalPluginPath . "/$original_name/$path";
+    my %path;
+    if ( $RT::LocalPluginPath ) {
+        die "Because of bugs in RT 3.8.0 this extension can not be installed.\n"
+            ."Upgrade to RT 3.8.1 or newer.\n" if $RT::VERSION =~ /^3\.8\.0/;
+        $path{$_} = $RT::LocalPluginPath . "/$original_name/$_"
+            foreach @DIRS;
+    } else {
+        foreach ( @DIRS ) {
+            no strict 'refs';
+            my $varname = "RT::Local" . ucfirst($_) . "Path";
+            $path{$_} = ${$varname} || "$RT::LocalPath/$_";
         }
+
+        $path{$_} .= "/$name" for grep $path{$_}, qw(etc po var);
     }
 
-    my $args = join( ', ', map "q($_)", %path );
-    print "./$_\t=> $path{$_}\n" for sort keys %path;
+    my %index = map { $_ => 1 } @INDEX_DIRS;
+    $self->no_index( directory => $_ ) foreach grep !$index{$_}, @DIRS;
 
-    if ( my @dirs = map { ( -D => $_ ) } grep $path{$_}, qw(bin html sbin) ) {
-        my @po = map { ( -o => $_ ) } grep -f,
+    my $args = join ', ', map "q($_)", map { ($_, $path{$_}) }
+        grep $subdirs{$_}, keys %path;
+
+    print "./$_\t=> $path{$_}\n" for sort keys %subdirs;
+
+    if ( my @dirs = map { ( -D => $_ ) } grep $subdirs{$_}, qw(bin html sbin) ) {
+        my @po = map { ( -o => $_ ) }
+            grep -f,
             File::Glob::bsd_glob("po/*.po");
         $self->postamble(<< ".") if @po;
 lexicons ::
@@ -109,7 +120,7 @@ install ::
 \t\$(NOECHO) \$(PERL) -MExtUtils::Install -e \"install({$args})\"
 .
 
-    if ( $path{var} and -d $RT::MasonDataDir ) {
+    if ( $subdirs{var} and -d $RT::MasonDataDir ) {
         my ( $uid, $gid ) = ( stat($RT::MasonDataDir) )[ 4, 5 ];
         $postamble .= << ".";
 \t\$(NOECHO) chown -R $uid:$gid $path{var}
@@ -118,18 +129,7 @@ install ::
 
     my %has_etc;
     if ( File::Glob::bsd_glob("$FindBin::Bin/etc/schema.*") ) {
-
-        # got schema, load factory module
         $has_etc{schema}++;
-        $self->load('RTxFactory');
-        $self->postamble(<< ".");
-factory ::
-\t\$(NOECHO) \$(PERL) -Ilib -I"$lib_path" -Minc::Module::Install -e"RTxFactory(qw($RTx $name))"
-
-dropdb ::
-\t\$(NOECHO) \$(PERL) -Ilib -I"$lib_path" -Minc::Module::Install -e"RTxFactory(qw($RTx $name drop))"
-
-.
     }
     if ( File::Glob::bsd_glob("$FindBin::Bin/etc/acl.*") ) {
         $has_etc{acl}++;
@@ -137,45 +137,75 @@ dropdb ::
     if ( -e 'etc/initialdata' ) { $has_etc{initialdata}++; }
 
     $self->postamble("$postamble\n");
-    if ( %subdirs and !$subdirs{'lib'} ) {
+    unless ( $subdirs{'lib'} ) {
         $self->makemaker_args( PM => { "" => "" }, );
     } else {
-        $self->makemaker_args( INSTALLSITELIB => "$RT::LocalPath/lib" );
+        $self->makemaker_args( INSTALLSITELIB => $path{'lib'} );
+        $self->makemaker_args( INSTALLARCHLIB => $path{'lib'} );
     }
 
-        $self->makemaker_args( INSTALLSITEMAN1DIR => "$RT::LocalPath/man/man1" );
-        $self->makemaker_args( INSTALLSITEMAN3DIR => "$RT::LocalPath/man/man3" );
-        $self->makemaker_args( INSTALLSITEARCH => "$RT::LocalPath/man" );
-        $self->makemaker_args( INSTALLARCHLIB => "$RT::LocalPath/lib" );
+    $self->makemaker_args( INSTALLSITEMAN1DIR => "$RT::LocalPath/man/man1" );
+    $self->makemaker_args( INSTALLSITEMAN3DIR => "$RT::LocalPath/man/man3" );
+    $self->makemaker_args( INSTALLSITEARCH => "$RT::LocalPath/man" );
+
     if (%has_etc) {
         $self->load('RTxInitDB');
         print "For first-time installation, type 'make initdb'.\n";
         my $initdb = '';
         $initdb .= <<"." if $has_etc{schema};
-\t\$(NOECHO) \$(PERL) -Ilib -I"$lib_path" -Minc::Module::Install -e"RTxInitDB(qw(schema))"
+\t\$(NOECHO) \$(PERL) -Ilib -I"$local_lib_path" -I"$lib_path" -Minc::Module::Install -e"RTxInitDB(qw(schema \$(NAME) \$(VERSION)))"
 .
         $initdb .= <<"." if $has_etc{acl};
-\t\$(NOECHO) \$(PERL) -Ilib -I"$lib_path" -Minc::Module::Install -e"RTxInitDB(qw(acl))"
+\t\$(NOECHO) \$(PERL) -Ilib -I"$local_lib_path" -I"$lib_path" -Minc::Module::Install -e"RTxInitDB(qw(acl \$(NAME) \$(VERSION)))"
 .
         $initdb .= <<"." if $has_etc{initialdata};
-\t\$(NOECHO) \$(PERL) -Ilib -I"$lib_path" -Minc::Module::Install -e"RTxInitDB(qw(insert))"
+\t\$(NOECHO) \$(PERL) -Ilib -I"$local_lib_path" -I"$lib_path" -Minc::Module::Install -e"RTxInitDB(qw(insert \$(NAME) \$(VERSION)))"
 .
         $self->postamble("initdb ::\n$initdb\n");
         $self->postamble("initialize-database ::\n$initdb\n");
     }
 }
 
-sub RTxInit {
-    unshift @INC, substr( delete( $INC{'RT.pm'} ), 0, -5 ) if $INC{'RT.pm'};
-    require RT;
-    RT::LoadConfig();
-    RT::ConnectToDatabase();
+# stolen from RT::Handle so we work on 3.6 (cmp_versions came in with 3.8)
+{ my %word = (
+    a     => -4,
+    alpha => -4,
+    b     => -3,
+    beta  => -3,
+    pre   => -2,
+    rc    => -1,
+    head  => 9999,
+);
+sub cmp_version($$) {
+    my ($a, $b) = (@_);
+    my @a = grep defined, map { /^[0-9]+$/? $_ : /^[a-zA-Z]+$/? $word{$_}|| -10 : undef }
+        split /([^0-9]+)/, $a;
+    my @b = grep defined, map { /^[0-9]+$/? $_ : /^[a-zA-Z]+$/? $word{$_}|| -10 : undef }
+        split /([^0-9]+)/, $b;
+    @a > @b
+        ? push @b, (0) x (@a-@b)
+        : push @a, (0) x (@b-@a);
+    for ( my $i = 0; $i < @a; $i++ ) {
+        return $a[$i] <=> $b[$i] if $a[$i] <=> $b[$i];
+    }
+    return 0;
+}}
+sub requires_rt {
+    my ($self,$version) = @_;
 
-    die "Cannot load RT" unless $RT::Handle and $RT::DatabaseType;
+    # if we're exactly the same version as what we want, silently return
+    return if ($version eq $RT::VERSION);
+
+    my @sorted = sort cmp_version $version,$RT::VERSION;
+
+    if ($sorted[-1] eq $version) {
+        # should we die?
+        warn "\nWarning: prerequisite RT $version not found. Your installed version of RT ($RT::VERSION) is too old.\n\n";
+    }
 }
 
 1;
 
 __END__
 
-#line 279
+#line 328
