@@ -13,10 +13,12 @@ use IO::Handle ();
 
 =head1 NAME
 
-RT::Crypt::SMIME - An RT extension to perform S/MIME encryption and decryption for mail RT sends
+RT::Crypt::SMIME - DEPRECATED - An RT extension to perform S/MIME encryption and decryption for mail RT sends
 
 
 =head1 SYNOPSIS
+    
+    This extension is deprecated.  It only works with RT 3.6 which is unsupported.
 
     # In your RT_SiteConfig.pm, add the following configuration directives
     use RT::Crypt::SMIME;
@@ -25,10 +27,6 @@ RT::Crypt::SMIME - An RT extension to perform S/MIME encryption and decryption f
     Set($SMIMEPasswords, { address => 'squeamish ossifrage'); # The private passphrases for RT's private keys
     @MailPlugins = (qw(Auth::MailFrom Auth::SMIME));
 
-=head1 DESCRIPTION
-
-
-=head1 METHODS
 
 =cut
 
@@ -253,7 +251,7 @@ Jesse Vincent  C<< <jesse@bestpractical.com> >>
 
 =head1 LICENCE AND COPYRIGHT
 
-Copyright (c) 2006, Best Practical Solutions, LLC. 
+Copyright (c) 2006,2012 Best Practical Solutions, LLC. 
 
 This module is free software; you can redistribute it and/or
 modify it under the same terms as Perl itself. See L<perlartistic>.

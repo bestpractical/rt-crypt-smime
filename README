@@ -1,51 +1,45 @@
-RT::Crypt::SMIME(3)   User Contributed Perl Documentation  RT::Crypt::SMIME(3)
+NAME
+    RT::Crypt::SMIME - DEPRECATED - An RT extension to perform S/MIME
+    encryption and decryption for mail RT sends
 
+SYNOPSIS
+        This extension is deprecated.  It only works with RT 3.6 which is unsupported.
 
+        # In your RT_SiteConfig.pm, add the following configuration directives
+        use RT::Crypt::SMIME;
+        Set($OpenSSLPath, '/usr/bin/openssl'); # or wherever openssl lives
+        Set($SMIMEKeys, '/opt/rt3/etc'); # This directory should contain RT's private keys and certificates in address.pem files
+        Set($SMIMEPasswords, { address => 'squeamish ossifrage'); # The private passphrases for RT's private keys
+        @MailPlugins = (qw(Auth::MailFrom Auth::SMIME));
 
-NNAAMMEE
-       RT::Crypt::SMIME − An RT extension to perform S/MIME encryption and
-       decryption for mail RT sends
+AUTHOR
+    Jesse Vincent "<jesse@bestpractical.com>"
 
-SSYYNNOOPPSSIISS
-           # In your RT_SiteConfig.pm, add the following configuration directives
-           use RT::Crypt::SMIME;
-           Set($OpenSSLPath, ’/usr/bin/openssl’); # or wherever openssl lives
-           Set($SMIMEKeys, ’/opt/rt3/etc’); # This directory should contain RT’s private keys and certificates in address.pem files
-           Set($SMIMEPasswords, { address => ’squeamish ossifrage’); # The private passphrases for RT’s private keys
-           @MailPlugins = (qw(Auth::MailFrom Auth::SMIME));
+LICENCE AND COPYRIGHT
+    Copyright (c) 2006,2012 Best Practical Solutions, LLC.
 
-DDEESSCCRRIIPPTTIIOONN
-MMEETTHHOODDSS
-AAUUTTHHOORR
-       Jesse Vincent  "<jesse@bestpractical.com>"
+    This module is free software; you can redistribute it and/or modify it
+    under the same terms as Perl itself. See perlartistic.
 
-LLIICCEENNCCEE AANNDD CCOOPPYYRRIIGGHHTT
-       Copyright (c) 2006, Best Practical Solutions, LLC.
+DISCLAIMER OF WARRANTY
+    BECAUSE THIS SOFTWARE IS LICENSED FREE OF CHARGE, THERE IS NO WARRANTY
+    FOR THE SOFTWARE, TO THE EXTENT PERMITTED BY APPLICABLE LAW. EXCEPT WHEN
+    OTHERWISE STATED IN WRITING THE COPYRIGHT HOLDERS AND/OR OTHER PARTIES
+    PROVIDE THE SOFTWARE "AS IS" WITHOUT WARRANTY OF ANY KIND, EITHER
+    EXPRESSED OR IMPLIED, INCLUDING, BUT NOT LIMITED TO, THE IMPLIED
+    WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE. THE
+    ENTIRE RISK AS TO THE QUALITY AND PERFORMANCE OF THE SOFTWARE IS WITH
+    YOU. SHOULD THE SOFTWARE PROVE DEFECTIVE, YOU ASSUME THE COST OF ALL
+    NECESSARY SERVICING, REPAIR, OR CORRECTION.
 
-       This module is free software; you can redistribute it and/or modify it
-       under the same terms as Perl itself. See perlartistic.
+    IN NO EVENT UNLESS REQUIRED BY APPLICABLE LAW OR AGREED TO IN WRITING
+    WILL ANY COPYRIGHT HOLDER, OR ANY OTHER PARTY WHO MAY MODIFY AND/OR
+    REDISTRIBUTE THE SOFTWARE AS PERMITTED BY THE ABOVE LICENCE, BE LIABLE
+    TO YOU FOR DAMAGES, INCLUDING ANY GENERAL, SPECIAL, INCIDENTAL, OR
+    CONSEQUENTIAL DAMAGES ARISING OUT OF THE USE OR INABILITY TO USE THE
+    SOFTWARE (INCLUDING BUT NOT LIMITED TO LOSS OF DATA OR DATA BEING
+    RENDERED INACCURATE OR LOSSES SUSTAINED BY YOU OR THIRD PARTIES OR A
+    FAILURE OF THE SOFTWARE TO OPERATE WITH ANY OTHER SOFTWARE), EVEN IF
+    SUCH HOLDER OR OTHER PARTY HAS BEEN ADVISED OF THE POSSIBILITY OF SUCH
+    DAMAGES.
 
-DDIISSCCLLAAIIMMEERR OOFF WWAARRRRAANNTTYY
-       BECAUSE THIS SOFTWARE IS LICENSED FREE OF CHARGE, THERE IS NO WARRANTY
-       FOR THE SOFTWARE, TO THE EXTENT PERMITTED BY APPLICABLE LAW. EXCEPT
-       WHEN OTHERWISE STATED IN WRITING THE COPYRIGHT HOLDERS AND/OR OTHER
-       PARTIES PROVIDE THE SOFTWARE "AS IS" WITHOUT WARRANTY OF ANY KIND,
-       EITHER EXPRESSED OR IMPLIED, INCLUDING, BUT NOT LIMITED TO, THE IMPLIED
-       WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE. THE
-       ENTIRE RISK AS TO THE QUALITY AND PERFORMANCE OF THE SOFTWARE IS WITH
-       YOU. SHOULD THE SOFTWARE PROVE DEFECTIVE, YOU ASSUME THE COST OF ALL
-       NECESSARY SERVICING, REPAIR, OR CORRECTION.
-
-       IN NO EVENT UNLESS REQUIRED BY APPLICABLE LAW OR AGREED TO IN WRITING
-       WILL ANY COPYRIGHT HOLDER, OR ANY OTHER PARTY WHO MAY MODIFY AND/OR
-       REDISTRIBUTE THE SOFTWARE AS PERMITTED BY THE ABOVE LICENCE, BE LIABLE
-       TO YOU FOR DAMAGES, INCLUDING ANY GENERAL, SPECIAL, INCIDENTAL, OR CON‐
-       SEQUENTIAL DAMAGES ARISING OUT OF THE USE OR INABILITY TO USE THE SOFT‐
-       WARE (INCLUDING BUT NOT LIMITED TO LOSS OF DATA OR DATA BEING RENDERED
-       INACCURATE OR LOSSES SUSTAINED BY YOU OR THIRD PARTIES OR A FAILURE OF
-       THE SOFTWARE TO OPERATE WITH ANY OTHER SOFTWARE), EVEN IF SUCH HOLDER
-       OR OTHER PARTY HAS BEEN ADVISED OF THE POSSIBILITY OF SUCH DAMAGES.
-
-
-
-perl v5.8.8                       2008‐04‐28               RT::Crypt::SMIME(3)
